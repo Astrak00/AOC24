@@ -107,14 +107,14 @@ func readFile() [][]int {
 	numbers := make([][]int, 0)
 
 	for scanner.Scan() {
-		line := strings.Split(scanner.Text(), " ")
-		line_number := make([]int, 0)
-		for _, elem := range line {
+		line := strings.Fields(scanner.Text())
+		line_number := make([]int, len(line))
+		for i, elem := range line {
 			elem_int, err := strconv.Atoi(elem)
 			if err != nil {
-				panic("Parsing to int error")
+				log.Fatalf("Parsing to int error: %v", err)
 			}
-			line_number = append(line_number, elem_int)
+			line_number[i] = elem_int
 		}
 		numbers = append(numbers, line_number)
 	}
