@@ -23,62 +23,49 @@ func main() {
 	var direction Facing = "north"
 	position := startingPosition
 
-	position = navigateMap(mapa, position, direction)
-	//mapa.printMap()
-	fmt.Println(position)
+	_ = navigateMap(mapa, position, direction)
+	//fmt.Println(position)
 
 	visited := mapa.visited()
 	fmt.Println("The number of disitinct positions the guard will go to is:", len(visited))
-
-	// newTempMap, pos2 := mapInitialization()
-	// newTempMap = newTempMap.copyNewObstacle(Position{0, 0})
-	// newTempMap.printMap()
-	// var direction2 Facing = "north"
-	// pos2 = navigateMap(newTempMap, pos2, direction2)
-	// fmt.Println(pos2)
 
 	// Part2
 	// The idea for part two is creating a thread for each of the posible obstacles.
 	// If after some seconds the prorgam has not finished, that means it has gone into a loop
 	// If it finishes, it does not create a loop.
 
-	/* numberPosibleObstacles := len(visited)
-	fmt.Println(numberPosibleObstacles - 1)
-
-	for _, pos := range visited {
-		fmt.Println("Analizando posición:", pos)
-		baseMap, startingPosition := mapInitialization()
-		if startingPosition != pos {
-			baseMap[pos[0]][pos[1]] = '#'
-			baseMap.printMap()
-			var direction2 Facing = "north"
-			positionexit := navigateMap(baseMap, startingPosition, direction2)
-			fmt.Println(positionexit, position)
-		}
-	}
-	*/
-
 	otherBaseMap, startingPosition := mapInitialization()
 
 	var wg sync.WaitGroup
+	acc := 0
 
 	for _, pos := range visited {
 		if startingPosition != pos {
 			wg.Add(1)
 			go func(pos Position, mapaOriginal Map) {
 				defer wg.Done()
-				mapaOriginal[pos[0]][pos[1]] = '#'
-				var direction2 Facing = "north"
-				_ = navigateMap(mapaOriginal, startingPosition, direction2)
-				//fmt.Println(positionexit, position)
+				done := make(chan bool)
+				go func() {
+					mapaOriginal[pos[0]][pos[1]] = '#'
+					var direction2 Facing = "north"
+					_ = navigateMap(mapaOriginal, startingPosition, direction2)
+					done <- true
+				}()
+				select {
+				case <-done:
+					// Finished within 15 seconds
+				case <-time.After(15 * time.Second):
+					// Took longer than 15 seconds
+					acc++
+				}
 			}(pos, otherBaseMap.copy())
 		}
+	}
+	fmt.Println("The program is waiting for the goroutines to finish")
+	for runtime.NumGoroutine()-1 != acc {
+	}
 
-	}
-	for {
-		time.Sleep(1 * time.Second)
-		fmt.Println("Number of object to create a guard-loop: ", runtime.NumGoroutine()-1)
-	}
+	fmt.Println("The number of obstacles that create a loop is:", acc)
 }
 
 func navigateMap(mapaLocal Map, position Position, direction Facing) Position {
