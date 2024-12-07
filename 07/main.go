@@ -11,54 +11,71 @@ import (
 
 func main() {
 	lines := readFile("input.txt")
-	acc := 0
+	acc_part1 := 0
+	acc_part2 := 0
 	for _, line := range lines {
 		result := line[0]
 		restNumbers := line[1:]
-		ops := make([]bool, len(restNumbers)-1)
-		operations := permutations(ops)
-		for _, operation := range operations {
-			if checkOperation(result, restNumbers, operation) {
-				acc += result
-				break
+		ops := make([]int8, len(restNumbers)-1)
+		for i := range 2 {
+			operations := permutations(ops, i+2)
+			for _, operation := range operations {
+				if checkOperation(result, restNumbers, operation) {
+					if i == 0 {
+						acc_part1 += result
+					} else {
+						acc_part2 += result
+					}
+					break
+				}
 			}
 		}
+
 	}
-	fmt.Println(acc)
+	fmt.Println("Result for part1: ", acc_part1)
+	fmt.Println("Result for part2: ", acc_part2)
 }
 
-func checkOperation(result int, restNumbers []int, operations []bool) bool {
+func checkOperation(result int, restNumbers []int, operations []int8) bool {
 	temp_acc := restNumbers[0]
 	for i, operation := range operations {
-		if operation {
+		switch operation {
+		case 0:
 			temp_acc += restNumbers[i+1]
-		} else {
+		case 1:
 			temp_acc *= restNumbers[i+1]
+		case 2:
+			left := strconv.Itoa(temp_acc)
+			right := strconv.Itoa(restNumbers[i+1])
+			temp_cnversion, err := strconv.Atoi(left + right)
+			if err != nil {
+				log.Fatal("Error with conversion ", err)
+			}
+			temp_acc = temp_cnversion
 		}
 	}
 	return result == temp_acc
-
 }
 
-func permutations(operations []bool) [][]bool {
-	var result [][]bool
-	permutationsHelper(operations, 0, &result)
-	return result
-}
+func permutations(ops []int8, variants int) [][]int8 {
+	var helper func([]int8, int)
+	res := [][]int8{}
 
-func permutationsHelper(operations []bool, start int, result *[][]bool) {
-	if start == len(operations) {
-		perm := make([]bool, len(operations))
-		copy(perm, operations)
-		*result = append(*result, perm)
-		return
+	helper = func(arr []int8, n int) {
+		if n == len(arr) {
+			tmp := make([]int8, len(arr))
+			copy(tmp, arr)
+			res = append(res, tmp)
+			return
+		}
+		for i := int8(0); i < int8(variants); i++ {
+			arr[n] = i
+			helper(arr, n+1)
+		}
 	}
 
-	operations[start] = false
-	permutationsHelper(operations, start+1, result)
-
-	operations[start] = true
-	permutationsHelper(operations, start+1, result)
+	helper(ops, 0)
+	return res
 }
 
 func readFile(path string) [][]int {
