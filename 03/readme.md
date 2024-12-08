@@ -1,0 +1,1 @@
+The go program also runs the python script that strips the don't() for the do() as it has an easier parsing method and string manipulation than go. 

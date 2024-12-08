@@ -10,14 +10,13 @@ import (
 )
 
 func main() {
-	fmt.Println("Result part 1:")
-	part1()
-	fmt.Println("Result part 2:")
-	part2()
+	fmt.Println("Result part 1:", part1())
+	fmt.Println("Result part 2:", part2())
+
 }
 
-func part2() {
-	acc2 := 0
+func part2() int {
+	acc := 0
 	numbers := readFile()
 	for _, line := range numbers {
 
@@ -30,12 +29,12 @@ func part2() {
 				}
 			}
 			if isSafe2(tempLine) {
-				acc2++
+				acc++
 				break
 			}
 		}
 	}
-	fmt.Println(acc2)
+	return acc
 }
 
 func isSafe2(numbers []int) bool {
@@ -61,7 +60,7 @@ func isSafe2(numbers []int) bool {
 	return true
 }
 
-func part1() {
+func part1() int {
 	acc := 0
 	numbers := readFile()
 	for _, line := range numbers {
@@ -69,7 +68,7 @@ func part1() {
 			acc++
 		}
 	}
-	fmt.Println(acc)
+	return acc
 }
 
 func isSafe(numbers []int) bool {

@@ -8,13 +8,12 @@ import (
 )
 
 func main() {
-	fmt.Println("Result part 1:")
-	part1()
-	fmt.Println("Result part 2:")
-	part2()
+	fmt.Println("Result part 1:", part1())
+	fmt.Println("Result part 2:", part2())
+
 }
 
-func part2() {
+func part2() int {
 	left, right := readFile()
 
 	// Creating a map to store the appearance of the number of the second array(right)
@@ -30,11 +29,12 @@ func part2() {
 	for i := 0; i < len(left); i++ {
 		simmilarity += left[i] * map_right[left[i]]
 	}
-	fmt.Println(simmilarity)
+
+	return simmilarity
 
 }
 
-func part1() {
+func part1() int {
 	left, right := readFile()
 
 	// Sorting the arrays
@@ -47,7 +47,7 @@ func part1() {
 		difference += abs(left[i] - right[i])
 	}
 
-	fmt.Println(difference)
+	return difference
 }
 
 func abs(x int) int {

@@ -109,6 +109,7 @@ func (f Facing) turnRight() Facing {
 	case "west":
 		return "north"
 	default:
+		log.Fatal("Turn direction not recognized. Please use {\"north\", \"east\", \"south\", \"west\", }")
 		return "nada"
 	}
 }
@@ -118,19 +119,6 @@ func (m Map) copy() Map {
 	for _, row := range m {
 		rowTemp := make([]rune, len(row))
 		copy(rowTemp, row)
-		newMap = append(newMap, rowTemp)
-	}
-	return newMap
-}
-
-func (m Map) copyNewObstacle(pos Position) Map {
-	var newMap Map
-	for i, row := range m {
-		rowTemp := make([]rune, len(row))
-		copy(rowTemp, row)
-		if i == pos[0] {
-			rowTemp[pos[1]] = '#'
-		}
 		newMap = append(newMap, rowTemp)
 	}
 	return newMap

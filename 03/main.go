@@ -13,7 +13,7 @@ import (
 
 func main() {
 	result1 := part1("input.txt")
-	fmt.Println("Part 1: ", result1)
+	fmt.Println("Part 1:", result1)
 	launchPythonCleanupProcess()
 	result2 := part1("sal.sal")
 	fmt.Println("Part 2:", result2)
