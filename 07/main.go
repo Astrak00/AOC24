@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -45,13 +46,8 @@ func checkOperation(result int, restNumbers []int, operations []int8) bool {
 		case 1:
 			temp_acc *= restNumbers[i+1]
 		case 2:
-			left := strconv.Itoa(temp_acc)
-			right := strconv.Itoa(restNumbers[i+1])
-			temp_cnversion, err := strconv.Atoi(left + right)
-			if err != nil {
-				log.Fatal("Error with conversion ", err)
-			}
-			temp_acc = temp_cnversion
+			length_right := int(math.Log10(float64(restNumbers[i+1])) + 1)
+			temp_acc = temp_acc*int(math.Pow10(length_right)) + restNumbers[i+1]
 		}
 	}
 	return result == temp_acc
