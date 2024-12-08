@@ -13,39 +13,59 @@ type Estaciones map[rune][]Position
 
 func main() {
 	content := readFile("input.txt")
-	//solution := readFile("solution.txt")
+
 	rows := len(content)
 	cols := len(content[0])
 
 	estaciones := content.findStations()
 	//sestaciones.printEstaciones()
 
-	candidates := map[[2]int]bool{}
-	// _, ok := s[6] // check for existence
-	// s[8] = true   // add element
-	// delete(s, 2)  // remove element
+	candidatesPart1 := map[Position]bool{}
+	candidatesPart2 := map[Position]bool{}
+
+	// We add the positions of the stations as we know they will be in-line and will form an antinode.
+	for _, val := range estaciones {
+		for _, station := range val {
+			candidatesPart2[station] = true
+		}
+	}
 
 	for _, emisoras := range estaciones {
 		for i, pos1 := range emisoras {
 			for _, pos2 := range emisoras[i+1:] {
 				distanceTop := calculateDistanceVector(pos1, pos2)
-				// Top: 0,3 - Bottom: 1,0 = 0-1, 3-0 = Top += -1,3
-				// Inviertes -1,3 -> 1,-3
-				// Bottom += 1, -3
+
 				pos1Tmp := pos1.addDistance(distanceTop)
 				if pos1Tmp.checkBounds(rows, cols) {
-					candidates[pos1Tmp] = true
+					candidatesPart1[pos1Tmp] = true
 				}
+				// While we are in-bounds, we continue the "line"
+				for pos1Tmp.checkBounds(rows, cols) {
+					candidatesPart2[pos1Tmp] = true
+					pos1Tmp = pos1Tmp.addDistance(distanceTop)
+				}
+
+				// Inverting the direction of the displacement vector to form the oposite side of the line
 				distanceTop = distanceTop.invertDistance()
 				pos2Tmp := pos2.addDistance(distanceTop)
 				if pos2Tmp.checkBounds(rows, cols) {
-					candidates[pos2Tmp] = true
+					candidatesPart1[pos2Tmp] = true
+				}
+				for pos2Tmp.checkBounds(rows, cols) {
+					candidatesPart2[pos2Tmp] = true
+					pos2Tmp = pos2Tmp.addDistance(distanceTop)
 				}
 
 			}
 		}
 	}
-	fmt.Println("Solution part 1:", len(candidates))
+	fmt.Println("Solution part 1:", len(candidatesPart1))
+	fmt.Println("Solution part 2:", len(candidatesPart2))
+
+	//for k := range candidatesPart2 {
+	//	content[k[0]][k[1]] = '#'
+	//}
+	//content.printMap()
 }
 
 func (p Position) checkBounds(row, columns int) bool {
@@ -74,7 +94,7 @@ func (m Mapa) findStations() Estaciones {
 	for i, row := range m {
 		for j, elem := range row {
 			if elem != '.' {
-				estaciones[elem] = append(estaciones[elem], [2]int{i, j})
+				estaciones[elem] = append(estaciones[elem], Position{i, j})
 			}
 		}
 	}
@@ -84,6 +104,15 @@ func (m Mapa) findStations() Estaciones {
 func (e Estaciones) printEstaciones() {
 	for k, v := range e {
 		fmt.Println(string(k), "Values:", v)
+	}
+}
+
+func (m Mapa) printMap() {
+	for _, row := range m {
+		for _, elem := range row {
+			fmt.Print(string(elem))
+		}
+		fmt.Print("\n")
 	}
 }
 
