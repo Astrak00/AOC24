@@ -109,10 +109,7 @@ func (e Estaciones) printEstaciones() {
 
 func (m Mapa) printMap() {
 	for _, row := range m {
-		for _, elem := range row {
-			fmt.Print(string(elem))
-		}
-		fmt.Print("\n")
+		fmt.Println(string(row))
 	}
 }
 
